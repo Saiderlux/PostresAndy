@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pedido {
-    private static int nextId = 1;
+
+    private static int lastId = 0;
 
     private int id;
     private String direccion;
@@ -16,7 +17,7 @@ public class Pedido {
     private List<Postre> postres;
 
     public Pedido(String direccion, String nombre) {
-        this.id = nextId++;
+        this.id = ++lastId;
         this.direccion = direccion;
         this.nombre = nombre;
         this.postres = new ArrayList<>();
@@ -30,16 +31,8 @@ public class Pedido {
         return direccion;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
     public String getNombre() {
         return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public List<Postre> getPostres() {
@@ -62,4 +55,3 @@ public class Pedido {
         return total;
     }
 }
-
