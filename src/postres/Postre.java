@@ -1,20 +1,15 @@
 package postres;
 
-public class Postre {
+class Postre extends Producto {
 
-    private String nombre;
-    private double precio;
+    private String sabor;
 
-    public Postre(String nombre, double precio) {
-        this.nombre = nombre;
-        this.precio = precio;
+    public Postre(int id, String nombre, String sabor) {
+        super(id, nombre);
+        this.sabor = sabor;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public double getPrecio() {
-        return precio;
+    public String getSabor() {
+        return sabor;
     }
 }

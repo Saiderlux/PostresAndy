@@ -4,54 +4,35 @@
  */
 package postres;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Pedido {
+class Pedido {
 
-    private static int lastId = 0;
+    private final int numeroOrden;
+    private final String nombreCliente;
+    private final String direccionCliente;
+    private final List<Producto> productos;
 
-    private int id;
-    private String direccion;
-    private String nombre;
-    private List<Postre> postres;
-
-    public Pedido(String direccion, String nombre) {
-        this.id = ++lastId;
-        this.direccion = direccion;
-        this.nombre = nombre;
-        this.postres = new ArrayList<>();
+    public Pedido(int numeroOrden, String nombreCliente, String direccionCliente, List<Producto> productos) {
+        this.numeroOrden = numeroOrden;
+        this.nombreCliente = nombreCliente;
+        this.direccionCliente = direccionCliente;
+        this.productos = productos;
     }
 
-    public int getId() {
-        return id;
+    public int getNumeroOrden() {
+        return numeroOrden;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getNombreCliente() {
+        return nombreCliente;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getDireccionCliente() {
+        return direccionCliente;
     }
 
-    public List<Postre> getPostres() {
-        return postres;
-    }
-
-    public void agregarPostre(Postre postre) {
-        postres.add(postre);
-    }
-
-    public void eliminarPostre(Postre postre) {
-        postres.remove(postre);
-    }
-
-    public double calcularTotal() {
-        double total = 0.0;
-        for (Postre postre : postres) {
-            total += postre.getPrecio();
-        }
-        return total;
+    public List<Producto> getProductos() {
+        return productos;
     }
 }
