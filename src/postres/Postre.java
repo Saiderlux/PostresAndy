@@ -1,15 +1,7 @@
 package postres;
 
 class Postre extends Producto {
-
-    private String sabor;
-
-    public Postre(int id, String nombre, String sabor) {
+    public Postre(int id, String nombre) {
         super(id, nombre);
-        this.sabor = sabor;
-    }
-
-    public String getSabor() {
-        return sabor;
     }
 }

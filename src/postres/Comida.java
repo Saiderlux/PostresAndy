@@ -5,15 +5,7 @@
 package postres;
 
 class Comida extends Producto {
-
-    private String tipo;
-
-    public Comida(int id, String nombre, String tipo) {
+    public Comida(int id, String nombre) {
         super(id, nombre);
-        this.tipo = tipo;
-    }
-
-    public String getTipo() {
-        return tipo;
     }
 }
