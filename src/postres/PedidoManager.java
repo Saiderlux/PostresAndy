@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 class PedidoManager {
+
     private String postresFile;
     private String pedidosFile;
     private List<Producto> postres;
@@ -169,8 +170,31 @@ class PedidoManager {
         }
     }
 
+    public void recibirPedido(String nombreCliente, int numeroOrden) {
+        Pedido pedido = buscarPedido(numeroOrden, nombreCliente);
+        if (pedido != null) {
+            pedidos.remove(pedido);
+            guardarPedidos();
+            guardarPedidoRecibido(pedido);
+            System.out.println("Pedido recibido, archivado correctamente.");
+        } else {
+            System.out.println("Pedido no encontrado.");
+        }
+    }
+
     private void guardarPedidoCancelado(Pedido pedido) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("pedidos_cancelados.txt", true))) {
+        PedidoCancelado pedidoCancelado = new PedidoCancelado();
+        try (PrintWriter writer = new PrintWriter(new FileWriter(pedidoCancelado.getNombreArchivo(), true))) {
+            writer.println(pedido.getNumeroOrden() + "," + pedido.getNombreCliente() + ","
+                    + pedido.getDireccionCliente() + "," + obtenerProductosString(pedido.getProductos()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void guardarPedidoRecibido(Pedido pedido) {
+        PedidoRecibido pedidoRecibido = new PedidoRecibido();
+        try (PrintWriter writer = new PrintWriter(new FileWriter(pedidoRecibido.getNombreArchivo(), true))) {
             writer.println(pedido.getNumeroOrden() + "," + pedido.getNombreCliente() + ","
                     + pedido.getDireccionCliente() + "," + obtenerProductosString(pedido.getProductos()));
         } catch (IOException e) {
@@ -181,6 +205,7 @@ class PedidoManager {
     public void visualizarPedido(int numeroOrden, String nombreCliente) {
         Pedido pedido = buscarPedido(numeroOrden, nombreCliente);
         if (pedido != null) {
+            mostrarTicketEnConsola(pedido);
             generarTicket(pedido);
         } else {
             System.out.println("Pedido no encontrado.");
@@ -190,7 +215,7 @@ class PedidoManager {
     private void generarTicket(Pedido pedido) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("ticket.pdf"))) {
             writer.println("***************************");
-            writer.println("         Tienda de Postres - Andy");
+            writer.println("Tienda de Postres - Andy");
             writer.println("***************************");
             writer.println("Número de Orden: " + pedido.getNumeroOrden());
             writer.println("Cliente: " + pedido.getNombreCliente());
@@ -205,6 +230,22 @@ class PedidoManager {
         }
     }
 
+    private void mostrarTicketEnConsola(Pedido pedido) {
+
+        System.out.println("\n***************************");
+        System.out.println("Tienda de Postres - Andy");
+        System.out.println("***************************");
+        System.out.println("Número de Orden: " + pedido.getNumeroOrden());
+        System.out.println("Cliente: " + pedido.getNombreCliente());
+        System.out.println("Dirección: " + pedido.getDireccionCliente());
+        System.out.println("Productos:");
+        for (Producto producto : pedido.getProductos()) {
+            System.out.println("- " + producto.getNombre());
+        }
+        System.out.println("***************************\n");
+
+    }
+
     public void mostrarMenu() {
         Scanner scanner = new Scanner(System.in);
         int opcion = 0;
@@ -214,7 +255,8 @@ class PedidoManager {
             System.out.println("2. Modificar Pedido");
             System.out.println("3. Cancelar Pedido");
             System.out.println("4. Visualizar Pedido");
-            System.out.println("5. Salir");
+            System.out.println("5. Confirmar recepción de pedido");
+            System.out.println("6. Salir del programa");
             System.out.print("Seleccione una opción: ");
             opcion = scanner.nextInt();
             scanner.nextLine(); // Limpiar el buffer de entrada
@@ -233,13 +275,16 @@ class PedidoManager {
                     visualizarPedidoDesdeConsola(scanner);
                     break;
                 case 5:
+                    confirmarPedidoDesdeConsola(scanner);
+                    break;
+                case 6:
                     System.out.println("¡Hasta luego!");
                     break;
                 default:
                     System.out.println("Opción inválida. Intente de nuevo.");
                     break;
             }
-        } while (opcion != 5);
+        } while (opcion != 6);
         scanner.close();
     }
 
@@ -255,7 +300,7 @@ class PedidoManager {
         Pedido pedido = new Pedido(nombreCliente, direccionCliente, productos);
         agregarPedido(pedido);
 
-        System.out.println("Pedido agregado correctamente.");
+        System.out.println("Pedido agregado correctamente con número de orden: " + pedido.getNumeroOrden());
     }
 
     private List<Producto> seleccionarProductosDesdeConsola(Scanner scanner) {
@@ -333,6 +378,16 @@ class PedidoManager {
         cancelarPedido(nombreCliente, numeroOrden);
     }
 
+    private void confirmarPedidoDesdeConsola(Scanner scanner) {
+        System.out.print("Ingrese el nombre del cliente: ");
+        String nombreCliente = scanner.nextLine();
+        System.out.print("Ingrese el número de orden del pedido: ");
+        int numeroOrden = scanner.nextInt();
+        scanner.nextLine(); // Limpiar el buffer de entrada
+
+        recibirPedido(nombreCliente, numeroOrden);
+    }
+
     private void visualizarPedidoDesdeConsola(Scanner scanner) {
         System.out.print("Ingrese el número de orden del pedido: ");
         int numeroOrden = scanner.nextInt();
@@ -340,7 +395,7 @@ class PedidoManager {
 
         System.out.print("Ingrese el nombre del cliente: ");
         String nombreCliente = scanner.nextLine();
-
+        System.out.println("\n==Consulte los archivos para visualizar su ticket en pdf==");
         visualizarPedido(numeroOrden, nombreCliente);
     }
 
